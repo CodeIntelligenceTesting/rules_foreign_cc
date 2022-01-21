@@ -20,10 +20,12 @@ def create_make_script(
 
     script.append("##enable_tracing##")
     configure_vars = get_make_env_vars(workspace_name, tools, flags, env_vars, deps, inputs)
-    script.extend(["{env_vars} {command}".format(
-        env_vars = configure_vars,
-        command = command,
-    ) for command in make_commands])
+    for key, value in configure_vars.items():
+        script.append("export {key}=\"{value}\"".format(
+            key = key,
+            value = value,
+        ))
+    script.extend(make_commands)
     script.append("##disable_tracing##")
     return script
 

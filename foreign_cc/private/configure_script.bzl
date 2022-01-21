@@ -70,8 +70,13 @@ def create_configure_script(
         ).lstrip())
 
     script.append("##mkdirs## $$BUILD_TMPDIR$$/$$INSTALL_PREFIX$$")
-    script.append("{env_vars} {prefix}\"{configure}\" --prefix=$$BUILD_TMPDIR$$/$$INSTALL_PREFIX$$ {user_options}".format(
-        env_vars = get_make_env_vars(workspace_name, tools, flags, env_vars, deps, inputs),
+    configure_vars = get_make_env_vars(workspace_name, tools, flags, env_vars, deps, inputs)
+    for key, value in configure_vars.items():
+        script.append("export {key}=\"{value}\"".format(
+            key = key,
+            value = value,
+        ))
+    script.append("{prefix}\"{configure}\" --prefix=$$BUILD_TMPDIR$$/$$INSTALL_PREFIX$$ {user_options}".format(
         prefix = configure_prefix,
         configure = configure_path,
         user_options = " ".join(user_options),
